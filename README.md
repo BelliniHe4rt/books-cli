@@ -2,11 +2,7 @@
 Books CLI
 </h1>  
 
-<h3 align="">
-   This project is being created and updated for study purpose only. The objective is to create a personal library where I can manage all of my books, following the 3 makes of the software development: make it work, make it right, and make it fast.
-</h3> 
-
-<br>
+This project is being created and updated for study purpose only. The objective is to create a personal library where I can manage all of my books, following the 3 makes of the software development: make it work, make it right, and make it fast.
 
 <!-- ## :heart: 2 minutes quick start -->
 
@@ -17,7 +13,6 @@ Books CLI
 ```
 php cli.php
 ```
-<br>
 
 ## :mailbox_with_mail: License
 
