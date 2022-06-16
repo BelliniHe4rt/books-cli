@@ -1,33 +1,23 @@
-
-
 <h1 align="center">
-  books cli 
-</h1>
-a
-<h3 align="center">
-    Descrição curta
+Books CLI
+</h1>  
+
+<h3 align="">
+   This project is being created and updated for study purpose only. The objective is to create a personal library where I can manage all of my books, following the 3 makes of the software development: make it work, make it right, and make it fast.
 </h3> 
 
-## :heart: 2 minutes quick start
+<br>
+
+<!-- ## :heart: 2 minutes quick start -->
 
 ## :computer: Running the CLI
 
 :bulb: Run the server on the command line just typing the following command:
+
 ```
 php cli.php
 ```
-
-
-Now you can the link on the browser and you will see the application running!
-
-
 <br>
-
-<!-- ## :v: Greetz
-
-```
-
-``` -->
 
 ## :mailbox_with_mail: License
 
