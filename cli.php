@@ -2,7 +2,7 @@
 $user = 'Nanda';
 $admin = 'Vozes da minha cabeça';
 
-$pdo = new PDO('mysql:host=localhost;dbname=dev_cli', 'nandaknwls', '');
+$pdo = new PDO('mysql:host=localhost;dbname=dev_cli', 'danielhe4rt', '');
 
 // $query = $pdo->query('select * from users');
 
@@ -39,9 +39,36 @@ while (true) {
         // TODO: criar a query de inserção de dados na tabela users
         $query = $pdo->query("insert into users (name, birthdate, gender) values ('$userName', '$userBirthdate', '$userGender')");
 
-        $users = $query->execute();
+        //$users = $query->execute();
         // ----------------------------
+        
         echo "$admin: Seu cadastro foi feito com sucesso!" . PHP_EOL;
+    }
+
+    if($input == 'deletar usuário') {
+        echo "$admin: Insira o nome do usuário que pretende deletar" . PHP_EOL;
+        echo "$user: ";
+        $userName = trim(fgets(STDIN));
+
+        $query = $pdo->query("select id, name from users where name = '$userName'");
+
+        $userName = $query->fetchAll(PDO::FETCH_ASSOC);
+        
+        foreach ($userName as $users) {
+            echo $users['id'] . ' - ' . $users['name'] . PHP_EOL;
+        }
+
+        echo "$admin: Digite o ID do usuário que pretende deletar" . PHP_EOL;
+        echo "$user: ";
+        $userID = trim(fgets(STDIN));
+        
+        //TODO: deletar através do ID
+        $query = $pdo->query("delete from users where id = $userID");
+
+        $userID = $query->execute();
+        // ----------------------------
+
+        echo "Usuário deletado com sucesso!" . PHP_EOL;
     }
 
     if ($input == 'listar usuários') {
@@ -54,11 +81,13 @@ while (true) {
         }
     }
 
+    //----------------------------------------------------------------------------------------------------------------------------
+
     if ($input == 'criar livro') {
 
-        echo "$admin: Insira o nome do livro" . PHP_EOL;
+        echo "$admin: Insira o título do livro" . PHP_EOL;
         echo "$user: ";
-        $bookName = trim(fgets(STDIN));
+        $bookTitle = trim(fgets(STDIN));
 
         echo "$admin: Insira o nome do autor" . PHP_EOL;
         echo "$user: ";
@@ -77,13 +106,64 @@ while (true) {
         $bookPages = trim(fgets(STDIN));
 
         echo '---------------------------' . PHP_EOL;
-        echo 'Nome do Livro: ' . $bookName . PHP_EOL;
+        echo 'Nome do Livro: ' . $bookTitle . PHP_EOL;
         echo 'Autor: '  . $bookAuthor . PHP_EOL;
         echo 'Gênero: '  . $bookGenre . PHP_EOL;
         echo 'Editora: '  . $bookPublisher . PHP_EOL;
         echo 'Páginas: '  . $bookPages . PHP_EOL;
-        // echo 'Disponibilidade: ' . 
+
+        //TODO: Query para printar a disponibilidade
+        $query = $pdo->query('select available from books order by id desc limit 1');
+
+        $availability = $query->fetchAll(PDO::FETCH_ASSOC);
+
+        foreach ($availability as $books) {
+            echo 'Disponibilidade: ' . $books['available'] . PHP_EOL;
+        }
         echo '---------------------------' . PHP_EOL;
+        //echo '---------------------------'
+
         echo "$admin: Seu livro foi cadastrado com sucesso!" . PHP_EOL;
+
+        //TODO: criar inserção de dados na tabela livros
+        $query = $pdo->query("insert into books (title, author, genre, publisher, pages) values ('$bookTitle', '$bookAuthor', '$bookGenre', '$bookPublisher', '$bookPages')");
+        // ----------------------------
+    }
+    
+    if($input == 'deletar livro') {
+        echo "$admin: Insira o nome do livro que pretende deletar" . PHP_EOL;
+        echo "$user: ";
+        $bookTitle = trim(fgets(STDIN));
+
+        $query = $pdo->query("select id, title from books where title = '$bookTitle'");
+
+        $bookTitle = $query->fetchAll(PDO::FETCH_ASSOC);
+
+        foreach($bookTitle as $books) {
+            echo $books['id'] . ' - ' . $books['title'] . PHP_EOL;
+        }
+
+        echo "$admin: Digite o ID do livro que pretende deletar" . PHP_EOL;
+        echo "$user: ";
+        $bookID = trim(fgets(STDIN));
+
+        //TODO: deletar através do ID
+        $query = $pdo->query("delete from books where id = $bookID");
+
+        $bookID = $query->execute();
+        // ----------------------------
+
+        echo "Livro deletado com sucesso!" . PHP_EOL;
+    }
+
+    if ($input == 'listar livros') {
+        $query = $pdo->query('select title from books');
+
+        $bookTitle = $query->fetchAll(PDO::FETCH_ASSOC);
+        
+        foreach ($bookTitle as $books) {
+            echo $books['title'] . PHP_EOL;
+        }
     }
 }
+
