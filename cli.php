@@ -1,6 +1,7 @@
 <?php
-$user = 'Nanda';
-$admin = 'Vozes da minha cabeça';
+
+define('CONSOLE_USER', 'Nanda');
+define('CONSOLE_ADMIN', 'Vozes da minha cabeça');
 
 $pdo = new PDO('mysql:host=localhost;dbname=dev_cli', 'danielhe4rt', '');
 
@@ -14,20 +15,20 @@ $pdo = new PDO('mysql:host=localhost;dbname=dev_cli', 'danielhe4rt', '');
 
 while (true) {
     
-    echo "$user: ";
+    echo CONSOLE_USER . ": ";
     $input = trim(fgets(STDIN));
 
     if($input == 'criar usuário') {
-        echo "$admin: Insira seu nome" . PHP_EOL;
-        echo "$user: ";
+        echo CONSOLE_ADMIN . ': Insira seu nome' . PHP_EOL;
+        echo CONSOLE_USER .  ': ';
         $userName = trim(fgets(STDIN));
 
-        echo "$admin: Insira sua data de nascimento" . PHP_EOL;
-        echo "$user: ";
+        echo CONSOLE_ADMIN . ': Insira sua data de nascimento' . PHP_EOL;
+        echo CONSOLE_USER . ': ';
         $userBirthdate = trim(fgets(STDIN));
 
-        echo "$admin: Insira seu gênero" . PHP_EOL;
-        echo "$user: ";
+        echo CONSOLE_ADMIN . ': Insira seu gênero' . PHP_EOL;
+        echo CONSOLE_USER . ': ';
         $userGender = trim(fgets(STDIN));
 
         echo '---------------------------' . PHP_EOL;
@@ -37,20 +38,20 @@ while (true) {
         echo '---------------------------' . PHP_EOL;
         
         // TODO: criar a query de inserção de dados na tabela users
-        $query = $pdo->query("insert into users (name, birthdate, gender) values ('$userName', '$userBirthdate', '$userGender')");
+        $query = $pdo->query("INSERT INTO users (name, birthdate, gender) VALUES ('$userName', '$userBirthdate', '$userGender')");
 
         //$users = $query->execute();
         // ----------------------------
         
-        echo "$admin: Seu cadastro foi feito com sucesso!" . PHP_EOL;
+        echo CONSOLE_ADMIN . ': Seu cadastro foi feito com sucesso!' . PHP_EOL;
     }
 
     if($input == 'deletar usuário') {
-        echo "$admin: Insira o nome do usuário que pretende deletar" . PHP_EOL;
-        echo "$user: ";
+        echo CONSOLE_ADMIN . ': Insira o nome do usuário que pretende deletar' . PHP_EOL;
+        echo CONSOLE_USER . ': ';
         $userName = trim(fgets(STDIN));
 
-        $query = $pdo->query("select id, name from users where name = '$userName'");
+        $query = $pdo->query("SELECT id, name FROM users WHERE name = '$userName'");
 
         $userName = $query->fetchAll(PDO::FETCH_ASSOC);
         
@@ -58,21 +59,21 @@ while (true) {
             echo $users['id'] . ' - ' . $users['name'] . PHP_EOL;
         }
 
-        echo "$admin: Digite o ID do usuário que pretende deletar" . PHP_EOL;
-        echo "$user: ";
+        echo CONSOLE_ADMIN . ': Digite o ID do usuário que pretende deletar' . PHP_EOL;
+        echo CONSOLE_USER . ': ';
         $userID = trim(fgets(STDIN));
         
         //TODO: deletar através do ID
-        $query = $pdo->query("delete from users where id = $userID");
+        $query = $pdo->query("DELETE FROM users WHERE id = $userID");
 
-        $userID = $query->execute();
+        //$userID = $query->execute();
         // ----------------------------
 
-        echo "Usuário deletado com sucesso!" . PHP_EOL;
+        echo 'Usuário deletado com sucesso!' . PHP_EOL;
     }
 
     if ($input == 'listar usuários') {
-        $query = $pdo->query('select name from users');
+        $query = $pdo->query('SELECT name FROM users');
 
         $userName = $query->fetchAll(PDO::FETCH_ASSOC);
         
@@ -81,28 +82,83 @@ while (true) {
         }
     }
 
+    if($input == 'editar usuário') {
+        echo CONSOLE_ADMIN . ': Insira o nome do usuário que pretende alterar informações' . PHP_EOL;
+        echo CONSOLE_USER . ': ';
+        $userName = trim(fgets(STDIN));
+
+        $query = $pdo->query("SELECT id, name FROM users WHERE name LIKE '%$userName%'");
+
+        $users = $query->fetchAll(PDO::FETCH_ASSOC);
+
+        foreach($users as $user) {
+            echo $user['id'] . ' - ' . $user['name'] . PHP_EOL;
+        }
+
+        echo CONSOLE_ADMIN . ': Insira o ID do usuário que pretende alterar informações' . PHP_EOL;
+        echo CONSOLE_USER . ': ';
+        $userID = trim(fgets(STDIN));
+
+        //TODO: fazer a query de update
+        $query = $pdo->query("SELECT * FROM users WHERE id = $userID");
+
+        $selectedUser = $query->fetch(PDO::FETCH_ASSOC);
+
+        // var_dump($selectedUser);
+
+        echo CONSOLE_ADMIN . ': Você deseja alterar o nome deste usuário?' . PHP_EOL;
+        echo 'Caso sim, digite o nome. Caso não, deixe vazio.' . PHP_EOL;
+        echo CONSOLE_USER . ": ";
+        $newUserName = trim(fgets(STDIN));
+
+        if(empty($newUserName)) {
+            $newUserName = $selectedUser['name'];
+        }
+
+        echo CONSOLE_ADMIN . ': Você deseja alterar a data de nascimento deste usuário?' . PHP_EOL;
+        echo 'Caso sim, digite a data. Caso não, deixe vazio.' . PHP_EOL;
+        echo CONSOLE_USER . ": ";
+        $newUserBirthdate = trim(fgets(STDIN));
+
+        if(empty($newUserBirthdate)) {
+            $newUserBirthdate = $selectedUser['birthdate'];
+        }
+
+        echo CONSOLE_ADMIN . ': Você deseja alterar o gênero deste usuário?' . PHP_EOL;
+        echo 'Caso sim, digite o gênero. Caso não, deixe vazio.' . PHP_EOL;
+        echo CONSOLE_USER . ": ";
+        $newUserGender = trim(fgets(STDIN));
+        
+        if(empty($newUserGender)) {
+            $newUserGender = $selectedUser['gender'];
+        }
+        // ----------------------------
+
+        echo PHP_EOL . 'Edição realizada com sucesso!' . PHP_EOL;
+    }
+
     //----------------------------------------------------------------------------------------------------------------------------
 
     if ($input == 'criar livro') {
 
-        echo "$admin: Insira o título do livro" . PHP_EOL;
-        echo "$user: ";
+        echo CONSOLE_ADMIN . ': Insira o título do livro' . PHP_EOL;
+        echo CONSOLE_USER . ': ';
         $bookTitle = trim(fgets(STDIN));
 
-        echo "$admin: Insira o nome do autor" . PHP_EOL;
-        echo "$user: ";
+        echo CONSOLE_ADMIN . ': Insira o nome do autor' . PHP_EOL;
+        echo CONSOLE_USER . ': ';
         $bookAuthor = trim(fgets(STDIN));
 
-        echo "$admin: Insira o gênero do livro" . PHP_EOL;
-        echo "$user: ";
+        echo CONSOLE_ADMIN . ': Insira o gênero do livro' . PHP_EOL;
+        echo CONSOLE_USER . ': ';
         $bookGenre = trim(fgets(STDIN));
 
-        echo "$admin: Insira a editora do livro" . PHP_EOL;
-        echo "$user: ";
+        echo CONSOLE_ADMIN . ': Insira a editora do livro' . PHP_EOL;
+        echo CONSOLE_USER . ': ';
         $bookPublisher = trim(fgets(STDIN));
 
-        echo "$admin: Insira a quantidade de páginas do livro" . PHP_EOL;
-        echo "$user: ";
+        echo CONSOLE_ADMIN . ': Insira a quantidade de páginas do livro' . PHP_EOL;
+        echo CONSOLE_USER . ': ';
         $bookPages = trim(fgets(STDIN));
 
         echo '---------------------------' . PHP_EOL;
@@ -113,7 +169,7 @@ while (true) {
         echo 'Páginas: '  . $bookPages . PHP_EOL;
 
         //TODO: Query para printar a disponibilidade
-        $query = $pdo->query('select available from books order by id desc limit 1');
+        $query = $pdo->query('SELECT available FROM books ORDER BY id DESC LIMIT 1');
 
         $availability = $query->fetchAll(PDO::FETCH_ASSOC);
 
@@ -123,19 +179,19 @@ while (true) {
         echo '---------------------------' . PHP_EOL;
         //echo '---------------------------'
 
-        echo "$admin: Seu livro foi cadastrado com sucesso!" . PHP_EOL;
+        echo CONSOLE_ADMIN . ': Seu livro foi cadastrado com sucesso!' . PHP_EOL;
 
         //TODO: criar inserção de dados na tabela livros
-        $query = $pdo->query("insert into books (title, author, genre, publisher, pages) values ('$bookTitle', '$bookAuthor', '$bookGenre', '$bookPublisher', '$bookPages')");
+        $query = $pdo->query("INSERT INTO books (title, author, genre, publisher, pages) VALUES ('$bookTitle', '$bookAuthor', '$bookGenre', '$bookPublisher', '$bookPages')");
         // ----------------------------
     }
     
     if($input == 'deletar livro') {
-        echo "$admin: Insira o nome do livro que pretende deletar" . PHP_EOL;
-        echo "$user: ";
+        echo CONSOLE_ADMIN . ': Insira o nome do livro que pretende deletar' . PHP_EOL;
+        echo CONSOLE_USER . ': ';
         $bookTitle = trim(fgets(STDIN));
 
-        $query = $pdo->query("select id, title from books where title = '$bookTitle'");
+        $query = $pdo->query("SELECT id, title FROM books WHERE title = '$bookTitle'");
 
         $bookTitle = $query->fetchAll(PDO::FETCH_ASSOC);
 
@@ -143,21 +199,21 @@ while (true) {
             echo $books['id'] . ' - ' . $books['title'] . PHP_EOL;
         }
 
-        echo "$admin: Digite o ID do livro que pretende deletar" . PHP_EOL;
-        echo "$user: ";
+        echo CONSOLE_ADMIN . ': Digite o ID do livro que pretende deletar' . PHP_EOL;
+        echo CONSOLE_USER . ': ';
         $bookID = trim(fgets(STDIN));
 
         //TODO: deletar através do ID
-        $query = $pdo->query("delete from books where id = $bookID");
+        $query = $pdo->query("DELETE FROM books WHERE id = $bookID");
 
-        $bookID = $query->execute();
+        //$bookID = $query->execute();
         // ----------------------------
 
-        echo "Livro deletado com sucesso!" . PHP_EOL;
+        echo 'Livro deletado com sucesso!' . PHP_EOL;
     }
 
     if ($input == 'listar livros') {
-        $query = $pdo->query('select title from books');
+        $query = $pdo->query('SELECT title FROM books');
 
         $bookTitle = $query->fetchAll(PDO::FETCH_ASSOC);
         
@@ -165,5 +221,75 @@ while (true) {
             echo $books['title'] . PHP_EOL;
         }
     }
-}
 
+    if ($input == 'editar livro') {
+        echo CONSOLE_ADMIN . ': Insira o título do livro que pretende alterar as informações' . PHP_EOL;
+        echo CONSOLE_USER . ': ';
+        $bookTitle = trim(fgets(STDIN));
+
+        $query = $pdo->query("SELECT id, title FROM books WHERE title LIKE '%$bookTitle%'");
+        
+        $books = $query->fetchAll(PDO::FETCH_ASSOC);
+
+        foreach ($books as $book) {
+            echo $book['id'] . ' - ' . $book['title'] . PHP_EOL;
+        }
+
+        echo CONSOLE_ADMIN . ': Insira o ID do livro que pretende alterar as informações' . PHP_EOL;
+        echo CONSOLE_USER . ': ';
+        $bookID = trim(fgets(STDIN));
+
+        //TODO: Fazer a query de update
+        $query = $pdo->query("SELECT * FROM books WHERE id = $bookID");
+
+        $selectedBook = $query->fetch(PDO::FETCH_ASSOC);
+
+        echo CONSOLE_ADMIN . ': Você deseja alterar o título deste livro?' . PHP_EOL;
+        echo 'Caso sim, digite o título. Caso não, deixe vazio.' . PHP_EOL;
+        echo CONSOLE_USER . ': ';
+        $newBookTitle = trim(fgets(STDIN));
+    
+        if(empty($newUserName)) {
+            $newUserName = $selectedBook['title'];
+        }
+    
+        echo CONSOLE_ADMIN . ': Você deseja alterar o nome do autor deste livro?' . PHP_EOL;
+        echo 'Caso sim, digite o nome do autor. Caso não, deixe vazio.' . PHP_EOL;
+        echo CONSOLE_USER . ': ';
+        $newAuthorName = trim(fgets(STDIN));
+    
+        if(empty($newAuthorName)) {
+            $newAuthorName = $selectedBook['author'];
+        }
+    
+        echo CONSOLE_ADMIN . ': Você deseja alterar o gênero deste livro?' . PHP_EOL;
+        echo 'Caso sim, digite o gênero. Caso não, deixe vazio.' . PHP_EOL;
+        echo CONSOLE_USER . ': ';
+        $newBookGenre = trim(fgets(STDIN));
+        
+        if(empty($newBookGenre)) {
+            $newBookGenre = $selectedBook['genre'];
+        }
+
+        echo CONSOLE_ADMIN . ': Você deseja alterar a editora deste livro?' . PHP_EOL;
+        echo 'Caso sim, digite a editora. Caso não, deixe vazio.' . PHP_EOL;
+        echo CONSOLE_USER . ': ';
+        $newBookPublisher = trim(fgets(STDIN));
+        
+        if(empty($newBookPublisher)) {
+            $newBookGenre = $selectedBook['publisher'];
+        }
+
+        echo CONSOLE_ADMIN . ': Você deseja alterar o número de páginas deste livro?' . PHP_EOL;
+        echo 'Caso sim, digite o número de páginas. Caso não, deixe vazio.' . PHP_EOL;
+        echo CONSOLE_USER . ': ';
+        $newBookPages = trim(fgets(STDIN));
+        
+        if(empty($newBookPages)) {
+            $newBookGenre = $selectedBook['pages'];
+        }
+        // ----------------------------
+    
+        echo PHP_EOL . 'Edição realizada com sucesso!' . PHP_EOL;
+    }
+}
