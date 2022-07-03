@@ -3,7 +3,7 @@ create table users(
     name varchar(100) not null,
     birthdate date not null,
     gender varchar(10)
-);
+); 
 
 create table books(
     id int primary key auto_increment,
@@ -19,6 +19,7 @@ create table user_books(
     id int primary key auto_increment,
     user_id int not null, 
     book_id int not null,
+    book_title varchar(100) not null,
     current_page int(4) not null default(1),
     devolution_at timestamp not null,
     foreign key (user_id) references users(id),
