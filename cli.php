@@ -11,7 +11,7 @@ $pdo = new PDO('mysql:host=localhost;dbname=dev_cli', 'danielhe4rt', '');
 
 // foreach ($users as $user) {
 //     var_dump($user['name']);
-// }
+// } 
 
 while (true) {
     
@@ -291,6 +291,91 @@ while (true) {
         // ----------------------------
     
         echo PHP_EOL . 'Edição realizada com sucesso!' . PHP_EOL;
+    }
+
+    if($input == 'gerenciar') {
+        $query = $pdo->query('SELECT * FROM users');
+        $users = $query->fetchAll(PDO::FETCH_ASSOC);
+
+    //    var_dump($users);
+      
+        foreach ($users as $user) {
+            echo 'ID: ' . $user['id'] . ' -> Nome: ' . $user['name'] . PHP_EOL;
+        }
+        echo CONSOLE_ADMIN . ': qual usuário você deseja gerenciar (digite apenas o id)' . PHP_EOL;
+        echo CONSOLE_USER . ': ';
+        $userId = trim(fgets(STDIN));
+
+        echo CONSOLE_ADMIN . ': qual ação você deseja tomar? (ver/emprestar/devolver)' . PHP_EOL;
+        echo CONSOLE_USER . ': ';
+        $userAction = trim(fgets(STDIN));
+
+        if ($userAction == 'emprestar') {
+
+            $query = $pdo->query('SELECT * FROM user_books WHERE user_id = ' . $userId);
+            $userBooks = $query->fetchAll(PDO::FETCH_ASSOC);
+
+            $userBookIds = [];
+            foreach ($userBooks as $userBook) {
+                $userBookIds[] = $userBook['book_id']; //livros que eu já tenho emprestado
+            }
+
+
+            $query = $pdo->query('SELECT * FROM books WHERE id NOT IN (' . implode(',', $userBookIds) . ')');
+            $availableBooks = $query->fetchAll(PDO::FETCH_ASSOC);
+
+            foreach ($availableBooks as $book) {
+                echo 'ID: ' . $book['id'] . ' -> Título: ' . $book['title'] . PHP_EOL; // livros disponíveis
+            }
+
+            echo CONSOLE_ADMIN . ': Qual livro você deseja emprestar?' . PHP_EOL;
+            echo CONSOLE_USER . ': ';
+            $bookId = trim(fgets(STDIN));
+
+            $query = $pdo->query("INSERT INTO user_books VALUES (null, $userId, $bookId, 1, null)");
+        }
+
+        if ($userAction == 'ver') {
+            echo CONSOLE_ADMIN . ': Digite o Id do usuário que deseja visualizar os livros emprestados' . PHP_EOL;
+            echo CONSOLE_USER . ': ';
+            $userId = trim(fgets(STDIN));
+
+            $query = $pdo->query('SELECT b.id, b.title FROM user_books ub JOIN books b ON b.id = ub.book_id WHERE user_id = 7');
+            $books = $query->fetchAll(PDO::FETCH_ASSOC);
+
+            foreach($books as $book) {
+                echo 'ID: ' . $book['id'] . ' -> Title: ' . $book['title'] . PHP_EOL;
+            }
+        }
+
+        if ($userAction == 'devolver') {
+            echo CONSOLE_ADMIN . ': Digite o Id do usuário que deseja devolver o livro' . PHP_EOL;
+            echo CONSOLE_USER . ': ';
+            $userId = trim(fgets(STDIN)); 
+
+            $query = $pdo->query('SELECT * FROM user_books WHERE user_id = ' . $userId);
+            $userBooks = $query->fetchAll(PDO::FETCH_ASSOC);
+
+            $userBookIds = [];
+            foreach ($userBooks as $userBook) {
+                $userBookIds[] = $userBook['book_id'];
+            }
+
+            $query = $pdo->query('SELECT * FROM books WHERE id IN (' . implode(',', $userBookIds) . ')');
+            $borrowedBooks = $query->fetchAll(PDO::FETCH_ASSOC);
+
+            echo 'Esses são os livros que esse usuário emprestou e não devolveu: ' . PHP_EOL;
+
+            foreach ($borrowedBooks as $book) {
+                echo 'ID: ' . $book['id'] . ' -> Título: ' . $book['title'] . PHP_EOL;
+            }
+
+            echo CONSOLE_ADMIN . ': Qual livro você deseja devolver?' . PHP_EOL;
+            echo CONSOLE_USER . ': ';
+            $bookDevolution = trim(fgets(STDIN));
+
+            $query = $pdo->query("UPDATE user_books SET devolution_at = CURRENT_TIMESTAMP() WHERE user_id = 7 AND book_id = '$bookDevolution'");
+        }
     }
 }
 

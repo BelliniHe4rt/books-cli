@@ -19,9 +19,8 @@ create table user_books(
     id int primary key auto_increment,
     user_id int not null, 
     book_id int not null,
-    book_title varchar(100) not null,
     current_page int(4) not null default(1),
-    devolution_at timestamp not null,
+    devolution_at timestamp,
     foreign key (user_id) references users(id),
     foreign key (book_id) references books(id)
 );
