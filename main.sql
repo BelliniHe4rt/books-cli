@@ -23,6 +23,7 @@ create table user_books(
     devolution_at timestamp,
     foreign key (user_id) references users(id),
     foreign key (book_id) references books(id)
+    ON DELETE CASCADE
 );
 
 insert into users (name, birthdate, gender) values ('Bellini', '1950-08-07', 'female');
