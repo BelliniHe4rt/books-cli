@@ -150,7 +150,7 @@ while (true) {
     }
 
     if ($input == 'deletar livro') {
-        say('Insira o nome do livro que pretende deletar');
+        say('Insira o título do livro que pretende deletar');
         $title = input();
 
         $query = $pdo->query("SELECT id, title FROM books WHERE title LIKE '%$title%'");
@@ -159,5 +159,12 @@ while (true) {
         foreach ($books as $book) {
             echo $book['id'] . ' - ' . $book['title'] . PHP_EOL;
         }
+
+        say('Digite o ID do livro que deseja deletar.');
+        $id = input();
+
+        $query = $pdo->query("DELETE FROM books WHERE id = $id");
+
+        say('Livro deletado com sucesso!');
     }
 }
