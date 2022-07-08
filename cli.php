@@ -5,14 +5,6 @@ define('CONSOLE_ADMIN', 'Vozes da minha cabeça');
 
 $pdo = new PDO('mysql:host=localhost;dbname=dev_cli', 'danielhe4rt', '');
 
-// $query = $pdo->query('select * from users');
-
-// $users = $query->fetchAll(PDO::FETCH_ASSOC);
-
-// foreach ($users as $user) {
-//     var_dump($user['name']);
-// } 
-
 while (true) {
 
     echo CONSOLE_USER . ": ";
@@ -39,10 +31,6 @@ while (true) {
 
         // TODO: criar a query de inserção de dados na tabela users
         $query = $pdo->query("INSERT INTO users (name, birthdate, gender) VALUES ('$userName', '$userBirthdate', '$userGender')");
-
-        //$users = $query->execute();
-        // ----------------------------
-
         echo CONSOLE_ADMIN . ': Seu cadastro foi feito com sucesso!' . PHP_EOL;
     }
 
