@@ -227,8 +227,8 @@ while (true) {
         echo CONSOLE_USER . ': ';
         $bookTitle = trim(fgets(STDIN));
 
-        $query = $pdo->query("SELECT id, title FROM books WHERE title LIKE '%$bookTitle%'");
 
+        $query = $pdo->query("SELECT id, title FROM books WHERE title LIKE '%$bookTitle%'");
         $books = $query->fetchAll(PDO::FETCH_ASSOC);
 
         foreach ($books as $book) {
@@ -274,8 +274,8 @@ while (true) {
         echo CONSOLE_ADMIN . ': Você deseja alterar a editora deste livro?' . PHP_EOL;
         echo 'Caso sim, digite a editora. Caso não, deixe vazio.' . PHP_EOL;
         echo CONSOLE_USER . ': ';
-        $newBookPublisher = trim(fgets(STDIN));
 
+        $newBookPublisher = trim(fgets(STDIN));
         if (empty($newBookPublisher)) {
             $newBookGenre = $selectedBook['publisher'];
         }
