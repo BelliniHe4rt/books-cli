@@ -47,10 +47,10 @@ while (true) {
         $name = input();
 
         $query = $pdo->query("SELECT id, name FROM users WHERE name LIKE '%$name%'");
-        $name = $query->fetchAll(PDO::FETCH_ASSOC);
+        $users = $query->fetchAll(PDO::FETCH_ASSOC);
 
-        foreach ($name as $users) {
-            echo $users['id'] . ' - ' . $users['name'] . PHP_EOL;
+        foreach ($users as $user) {
+            echo $user['id'] . ' - ' . $user['name'] . PHP_EOL;
         }
 
         say('Digite o ID do usuário que pretende deletar.');
@@ -84,7 +84,7 @@ while (true) {
         say('Insira o ID do usuário que pretende alterar informações.');
         $id = input();
 
-        $query = $pdo->query("SELECT * FROM users WHERE id = $id");
+        $query = $pdo->query("SELECT * FROM users WHERE id = $id"); // Poderia deixar só 'SELECT FROM...'
         $selectedUser = $query->fetch(PDO::FETCH_ASSOC);
 
         say('Você deseja alterar o nome deste usuário?' . PHP_EOL . 'Caso sim, digite o nome. Caso não, deixe vazio.');
@@ -142,6 +142,7 @@ while (true) {
 
         say('Livro cadastrado com sucesso!' . PHP_EOL . 'Veja também os livros disponíveis.');
 
+        //Não entendi a lógica dessa parte e o motivo dela estar antes de cadastrar os livros
         $query = $pdo->query('SELECT available FROM books ORDER BY id DESC LIMIT 1');
         $availability = $query->fetchAll(PDO::FETCH_ASSOC);
 
