@@ -16,6 +16,42 @@ function say(string $sentence): void
     echo CONSOLE_ADMIN . ': ' . $sentence . PHP_EOL;
 }
 
+function listUsers(array $users): void
+{
+    foreach ($users as $user) {
+        echo $user['id'] . ' - ' . $user['name'] . PHP_EOL;
+    }
+}
+
+function listBooks($books): void
+{
+    foreach ($books as $book) {
+        echo $book['id'] . ' - ' . $book['title'] . PHP_EOL;
+    }
+}
+
+/**
+ * @param array $userBooks // ver depois
+ * @return array<string>
+ */
+function getBooksIds(array $userBooks): array
+{
+    $userBookIds = [];
+    foreach ($userBooks as $userBook) {
+        $userBookIds[] = $userBook['book_id'];
+    }
+    return $userBookIds;
+}
+
+function getQueryBasedOnUserCurrentBooks(PDOStatement $query, array $userBookIds)
+{
+    if ($query->rowCount() == 0) {
+        return "SELECT * FROM books";
+    }
+    $notIn = implode(',', $userBookIds);
+    return "SELECT * FROM books WHERE id NOT IN ($notIn)";
+}
+
 while (true) {
     say('Digite o comando da ação que deseja realizar.');
     $input = input();
@@ -49,9 +85,7 @@ while (true) {
         $query = $pdo->query("SELECT id, name FROM users WHERE name LIKE '%$name%'");
         $users = $query->fetchAll(PDO::FETCH_ASSOC);
 
-        foreach ($users as $user) {
-            echo $user['id'] . ' - ' . $user['name'] . PHP_EOL;
-        }
+        listUsers($users);
 
         say('Digite o ID do usuário que pretende deletar.');
         $id = input();
@@ -65,9 +99,7 @@ while (true) {
         $query = $pdo->query('SELECT name FROM users');
         $users = $query->fetchAll(PDO::FETCH_ASSOC);
 
-        foreach ($users as $user) {
-            echo $user['name'] . PHP_EOL;
-        }
+        listUsers($users);
     }
 
     if ($input == 'editar usuário') {
@@ -77,9 +109,7 @@ while (true) {
         $query = $pdo->query("SELECT id, name FROM users WHERE name LIKE '%$name%'");
         $users = $query->fetchAll(PDO::FETCH_ASSOC);
 
-        foreach ($users as $user) {
-            echo $user['id'] . ' - ' . $user['name'] . PHP_EOL;
-        }
+        listUsers($users);
 
         say('Insira o ID do usuário que pretende alterar informações.');
         $id = input();
@@ -131,26 +161,16 @@ while (true) {
         $pages = input();
 
         echo '---------------------------' . PHP_EOL;
-        echo 'Nome do Livro: ' . $bookTitle . PHP_EOL;
-        echo 'Autor: ' . $bookAuthor . PHP_EOL;
-        echo 'Gênero: ' . $bookGenre . PHP_EOL;
-        echo 'Editora: ' . $bookPublisher . PHP_EOL;
-        echo 'Páginas: ' . $bookPages . PHP_EOL;
+        echo 'Nome do Livro: ' . $title . PHP_EOL;
+        echo 'Autor: ' . $author . PHP_EOL;
+        echo 'Gênero: ' . $genre . PHP_EOL;
+        echo 'Editora: ' . $publisher . PHP_EOL;
+        echo 'Páginas: ' . $pages . PHP_EOL;
         echo '---------------------------' . PHP_EOL;
 
         $query = $pdo->query("INSERT INTO books (title, author, genre, publisher, pages) VALUES ('$title', '$author', '$genre', '$publisher', '$pages')");
 
         say('Livro cadastrado com sucesso!' . PHP_EOL . 'Veja também os livros disponíveis.');
-
-        //Não entendi a lógica dessa parte e o motivo dela estar antes de cadastrar os livros
-        $query = $pdo->query('SELECT available FROM books ORDER BY id DESC LIMIT 1');
-        $availability = $query->fetchAll(PDO::FETCH_ASSOC);
-
-        echo '---------------------------' . PHP_EOL;
-        foreach ($availability as $books) {
-            echo 'Disponibilidade: ' . $books['available'] . PHP_EOL;
-        }
-        echo '---------------------------' . PHP_EOL;
     }
 
     if ($input == 'deletar livro') {
@@ -160,9 +180,7 @@ while (true) {
         $query = $pdo->query("SELECT id, title FROM books WHERE title LIKE '%$title%'");
         $books = $query->fetchAll(PDO::FETCH_ASSOC);
 
-        foreach ($books as $book) {
-            echo $book['id'] . ' - ' . $book['title'] . PHP_EOL;
-        }
+        listBooks($books);
 
         say('Digite o ID do livro que deseja deletar.');
         $id = input();
@@ -188,9 +206,7 @@ while (true) {
         $query = $pdo->query("SELECT id, title FROM books WHERE title LIKE '%$title%'");
         $books = $query->fetchAll(PDO::FETCH_ASSOC);
 
-        foreach ($books as $book) {
-            echo $book['id'] . ' - ' . $book['title'] . PHP_EOL;
-        }
+        listBooks($books);
 
         say('Insira o ID do livro que pretende alterar as informações');
         $id = input();
@@ -243,9 +259,7 @@ while (true) {
         $query = $pdo->query('SELECT * FROM users');
         $users = $query->fetchAll(PDO::FETCH_ASSOC);
 
-        foreach ($users as $user) {
-            echo 'ID: ' . $user['id'] . ' -> Nome: ' . $user['name'] . PHP_EOL;
-        }
+        listUsers($users);
 
         say('Qual usuário você deseja gerenciar? (digite apenas o ID).');
         $userId = input();
@@ -257,10 +271,7 @@ while (true) {
             $query = $pdo->query("SELECT * FROM user_books WHERE user_id = $userId AND devolution_at IS NULL");
             $userBooks = $query->fetchAll(PDO::FETCH_ASSOC);
 
-            $userBookIds = [];
-            foreach ($userBooks as $userBook) {
-                $userBookIds[] = $userBook['book_id'];
-            }
+            $userBookIds = getBooksIds($userBooks);
 
             if ($query->rowCount() == 0) {
                 say('Não há livros emprestados por este usuário.');
@@ -288,26 +299,13 @@ while (true) {
             $query = $pdo->query("SELECT * FROM user_books WHERE user_id = $userId AND devolution_at IS NULL");
             $userBooks = $query->fetchAll(PDO::FETCH_ASSOC);
 
-            $userBookIds = [];
-            foreach ($userBooks as $userBook) {
-                $userBookIds[] = $userBook['book_id'];
-            }
-
-            if ($query->rowCount() == 0) {
-                $queryFoda = "SELECT * FROM books";
-            } else {
-                $notIn = implode(',', $userBookIds);
-                $queryFoda = "SELECT * FROM books WHERE id NOT IN ($notIn)";
-                say('Não há livros disponíveis para emprestar.');
-                continue;
-            }
+            $userBookIds = getBooksIds($userBooks);
+            $queryFoda = getQueryBasedOnUserCurrentBooks($query, $userBookIds);
 
             $query = $pdo->query($queryFoda);
             $availableBooks = $query->fetchAll(PDO::FETCH_ASSOC);
 
-            foreach ($availableBooks as $book) {
-                echo 'ID: ' . $book['id'] . ' -> Título: ' . $book['title'] . PHP_EOL; // livros disponíveis
-            }
+            listBooks($availableBooks);
 
             say('Qual livro você deseja emprestar? (Digite o ID)');
             $bookId = input();
@@ -325,8 +323,8 @@ while (true) {
                 say('Este usuário ainda não emprestou nenhum livro!');
                 continue;
             }
-                foreach ($books as $book) {
-                    echo ('ID: ' . $book['id'] . ' -> Title: ' . $book['title'] . ' -> Devolução: ' . ($book['devolution_at'] ?? "Não devolveu!")) . PHP_EOL;
+            foreach ($books as $book) {
+                echo ('ID: ' . $book['id'] . ' -> Title: ' . $book['title'] . ' -> Devolução: ' . ($book['devolution_at'] ?? "Não devolveu!")) . PHP_EOL;
             }
         }
     }

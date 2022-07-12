@@ -3,7 +3,7 @@ create table users(
     name varchar(100) not null,
     birthdate date not null,
     gender varchar(10)
-); 
+);
 
 create table books(
     id int primary key auto_increment,
@@ -17,13 +17,14 @@ create table books(
 
 create table user_books(
     id int primary key auto_increment,
-    user_id int not null, 
+    user_id int not null,
     book_id int not null,
     current_page int(4) not null default(1),
     devolution_at timestamp,
-    foreign key (user_id) references users(id),
+    foreign key (user_id) references users(id)
+        ON DELETE CASCADE,
     foreign key (book_id) references books(id)
-    ON DELETE CASCADE
+        ON DELETE CASCADE
 );
 
 insert into users (name, birthdate, gender) values ('Bellini', '1950-08-07', 'female');
