@@ -1,13 +1,15 @@
 <?php
 
+// O source file DEVE ter o mesmo nome da classe, principalmente se ela for declarada pública
+
 const CONSOLE_ADMIN = 'Vozes da minha cabeça';
 const CONSOLE_USER = 'Nanda';
 
-class Cli
+class Cli // Source file - A classe já é padronizada como pública, não precisa declarar
 {
     public function run(): void
     {
-        while (true) {
+        while (true) { // Métodos, funções ou procedimentos - Onde o código é declarado
             $this->say('Digite o comando da ação que deseja realizar.');
             $input = $this->input();
 
@@ -26,6 +28,7 @@ class Cli
         }
     }
 
+    // Uma classe pode ter vários métodos, diferente do source file
     private function input(): string
     {
         echo CONSOLE_USER . ': ';
