@@ -9,8 +9,8 @@ $pdo = new PDO('mysql:host=localhost;dbname=dev_cli', 'danielhe4rt', '');
 
 // $users = $query->fetchAll(PDO::FETCH_ASSOC);
 
-// foreach ($users as $user) {
-//     var_dump($user['name']);
+// foreach ($users as $User) {
+//     var_dump($User['name']);
 // } 
 
 while (true) {
